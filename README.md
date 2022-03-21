@@ -1,7 +1,6 @@
 # Desafio 01 - Conceitos do Node.js
 ## Rotas da aplicação
-
-Com o template já clonado e o arquivo `index.js` aberto, você deve completar onde não possui código com o código para atingir os objetivos de cada teste.
+> Logo abaixo, você verá um guia completo das rotas
 
 ### POST `/users`
 
