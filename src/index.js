@@ -32,14 +32,16 @@ app.post("/users", (req, res) => {
     return res.status(400).json({ error: "The username is already in use!" });
   }
 
-  users.push({
+  const newUser = {
     id: uuid(),
     name,
     username,
     todos: [],
-  });
+  };
 
-  return res.status(201).send();
+  users.push(newUser);
+
+  return res.status(201).json(newUser);
 });
 
 app.get("/todos", checksExistsUserAccount, (req, res) => {
@@ -58,27 +60,64 @@ app.post("/todos", checksExistsUserAccount, (req, res) => {
       .json({ error: "No title or deadline, please insert both" });
   }
 
-  const todo = user.todos.push({
+  const todo = {
     id: uuid(),
     title,
     done: false,
     deadline: new Date(deadline),
     created_at: new Date(),
-  });
+  };
+
+  user.todos.push(todo);
 
   return res.status(201).json(todo);
 });
 
 app.put("/todos/:id", checksExistsUserAccount, (req, res) => {
-  // Complete aqui
+  const { id } = req.params;
+  const { title, deadline } = req.body;
+  const { user } = req;
+
+  const todo = user.todos.find((todo) => todo.id == id);
+
+  if (!todo) {
+    return res.status(404).json({ error: "Todo ID not found!" });
+  }
+
+  todo.title = title ? title : todo.title;
+  todo.deadline = deadline ? new Date(deadline) : todo.deadline;
+
+  return res.status(200).json(todo);
 });
 
 app.patch("/todos/:id/done", checksExistsUserAccount, (req, res) => {
-  // Complete aqui
+  const { id } = req.params;
+  const { user } = req;
+
+  const todo = user.todos.find((todo) => todo.id == id);
+
+  if (!todo) {
+    return res.status(404).json({ error: "Todo ID not found!" });
+  }
+
+  todo.done = true;
+
+  return res.status(200).json(todo);
 });
 
 app.delete("/todos/:id", checksExistsUserAccount, (req, res) => {
-  // Complete aqui
+  const { id } = req.params;
+  const { user } = req;
+
+  const todo = user.todos.find((todo) => todo.id == id);
+
+  if (!todo) {
+    return res.status(404).json({ error: "Todo ID not found!" });
+  }
+
+  user.todos.splice(user.todos.indexOf(todo), 1);
+
+  return res.status(204).end();
 });
 
 module.exports = app;
